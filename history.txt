@@ -1,1 +1,0 @@
-{'Month':4, 'Year':21, 'Cold water':1.0, 'Hot water':1.0, 'Electricity':1.0, 'Total Money':62.77}
