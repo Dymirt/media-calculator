@@ -105,10 +105,9 @@ def latest_reading_output():
 
 window = Tk()
 
-# TKinter window properties
+# Tkinter window properties
 window.title("Media Calculator")
 window.geometry("1000x200")
-window.configure(background='#ececeb')
 output = StringVar()
 label_cold_water_latest_reading = StringVar()
 label_hot_water_latest_reading = StringVar()

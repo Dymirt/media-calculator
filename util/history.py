@@ -1,12 +1,12 @@
 import datetime
 import json
-from itertools import islice
-
 
 # Clear history
 def clear_history():
     try:
         with open("history.txt", "w") as f:
+
+
             zeros = {'Month': 0, 'Year': 0,
                      'Cold water': 0, 'Cold water payment': 0,
                      'Hot water': 0, 'Hot water payment': 0,
@@ -25,37 +25,34 @@ def append_history(cold_water, cold_water_payment,
 
     # Corrent date
     current_date = datetime.datetime.now()
-    month = int(current_date.strftime("%m"))
-    yaear = int(current_date.strftime("%y"))
 
-    # Create JSON
-    data = "{"
-    data += f"\'Month\':{month},"
-    data += f" \'Year\':{yaear},"
-    data += f" \'Cold water\':{round(cold_water, 2)},"
-    data += f" \'Cold water payment\':{round(cold_water_payment, 2)},"
-    data += f" \'Hot water\':{round(hot_water, 2)},"
-    data += f" \'Hot water payment\':{round(hot_water_payment, 2)},"
-    data += f" \'Electricity\':{round(electricity, 2)},"
-    data += f" \'Electricity payment\':{round(electricity_payment, 2)},"
-    data += f" \'Total Payment\':{round(total_payment, 2)}"
-    data += "}"
+    history = {
+        "Month": current_date.strftime("%m"),
+        "Year": current_date.strftime("%y"),
+        "Cold water": round(cold_water, 2),
+        "Cold water payment": round(cold_water_payment, 2),
+        "Hot water": round(hot_water, 2),
+        "Hot water payment": round(hot_water_payment, 2),
+        "Electricity": round(electricity, 2),
+        "Electricity payment": round(electricity_payment, 2),
+        "Total Payment": round(total_payment, 2)
+    }
 
     # Add JSON data to txt file
     with open("history.txt", "a") as f:
-        print(data, file=f)
+        f.write("\n")
+        f.write(json.dumps(history))
 
 
-# Read history from file
+# Read history from file. if history is empty append zeros to file
 def get_history():
     history = []
     try:
         with open('history.txt') as f:
-            for line in islice(f, 0, None):
-                json_acceptable_string = line.replace("'", "\"")
-                d = json.loads(json_acceptable_string)
-                history.insert(0, d)
-    except:
+            for i in f.readlines():
+                history.append(json.loads(i.replace("'", "\"")))
+    except Exception as e:
+        print(e)
         # Create history.txt
         clear_history()
         # Return history using recursion
@@ -63,8 +60,6 @@ def get_history():
     return history
 
 
-# Return latest counters from history, if history is empty append zeros to file.
+# Return latest counters from history.
 def get_latest_readings():
-    history = get_history()
-    latest_readings = history[0]
-    return latest_readings
+    return get_history()[-1]
