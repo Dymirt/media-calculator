@@ -28,7 +28,7 @@ sql_create_table_list = [
 ]
 
 sql_add_utility = 'INSERT INTO utilities (Name, Symbol, Price, SubscriptionPrice) values(?, ?, ?, ?)'
-#sql_add_history = #TODO qurey add_history
+# sql_add_history = #TODO qurey add_history
 
 
 DATABASE = sqlite3.connect(database_file)
@@ -53,15 +53,25 @@ def get_all_utilities():
 
 def get_all_utility_name():
     c = DATABASE.cursor()
-    c.execute('SELECT name FROM utilities')
-    return c.fetchall()
+    c.execute('SELECT UtilityId, name FROM utilities')
+    utility_names_list = {}
+    for i in c.fetchall():
+        utility_names_list[i[0]] = i[1]
+    print(utility_names_list)
+    return utility_names_list
 
 
 def set_utilities():
     utility_list = [
         ("Electricity", "kW⋅h", 0.481053, 21.98),
-        ("Cold_Water", "m³",  9.85, 0),
-        ("Hot_water", "m³", 9.85 + 20.61, 0)
+        ("Cold Water", "m³", 9.85, 0),
+        ("Hot water", "m³", 9.85 + 20.61, 0)
     ]
     DATABASE.cursor().executemany(sql_add_utility, utility_list)
     DATABASE.commit()
+
+
+def get_values_by_name(name):
+    c = DATABASE.cursor()
+    c.execute('SELECT price, SubscriptionPrice FROM utilities WHERE Name=?', (name,),)
+    return c.fetchone()

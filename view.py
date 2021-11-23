@@ -1,6 +1,10 @@
 from tkinter import *
 from tkinter.ttk import *
 from util import models, database
+from guppy import hpy
+
+h = hpy()
+
 
 window = Tk()
 window.title('Utility payment')
@@ -36,3 +40,4 @@ file_menu.add_command(
 )
 
 window.mainloop()
+print(h.heap())

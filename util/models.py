@@ -111,11 +111,18 @@ class AddUtilityFrame(LabelFrame, Switchable):
 class AddUtilityValues(LabelFrame, Switchable):
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.set_utility_combobox = None
+        self.set_utility_button = None
+
         # Date
         self.date = StringVar()
         self.date.set(self.set_date())
         self.utilityId = IntVar()
-        self.utilityName = StringVar()
+
+        self.utility_dict = database.get_all_utility_name()
+
+        self.utilityName = ""
+
         self.price = DoubleVar()
         self.subscription_price = DoubleVar()
         self.history_value = DoubleVar()
@@ -123,7 +130,9 @@ class AddUtilityValues(LabelFrame, Switchable):
         self.consumption = DoubleVar()
         self.payment = DoubleVar()
 
-        self.output()
+        # Help
+        self.get_utility_name = StringVar()
+
         self.select_utility()
 
     @staticmethod
@@ -132,24 +141,46 @@ class AddUtilityValues(LabelFrame, Switchable):
         return f"{current_date.strftime('%m')}/{current_date.strftime('%y')}"
 
     def get_price(self):
-        pass
-        # TODO get price, subscription_price,  from utilities table
+        prices = database.get_values_by_name(self.utilityName)
+        self.price.set(prices[0])
+        self.subscription_price.set(prices[1])
 
     def select_utility(self):
-        utility_names_list = database.get_all_utility_name()
-        for i in utility_names_list:
-            print(i)
-        Combobox(self, values=utility_names_list, textvariable=self.utilityName).grid()
+        Label(self, text="Select Utility").grid()
+        name_list = []
+        for i in self.utility_dict:
+            name_list.append(self.utility_dict.get(i))
+        Combobox(self, values=name_list, textvariable=self.get_utility_name).grid()
+        Button(self, text="Select", command=self.set_utility_name).grid()
 
     def output(self):
         Entry(self, textvariable=self.date).grid()
-        Entry(self, textvariable=self.utilityId).grid()
         Entry(self, textvariable=self.price).grid()
         Entry(self, textvariable=self.subscription_price).grid()
         Entry(self, textvariable=self.history_value).grid()
         Entry(self, textvariable=self.value).grid()
+        Button(self, text="Calculate consumption", command=self.calculate_consumption).grid()
         Entry(self, textvariable=self.consumption).grid()
+
+        Button(self, text="Calculate payment", command=self.calculate_payment).grid()
         Entry(self, textvariable=self.payment).grid()
+        Button(self, text="Add Value").grid()
+        print(self.grid_slaves())
+
+    def set_utility_name(self):
+        self.utilityName = self.get_utility_name.get()
+        self.get_price()
+        self.output()
+
+    def calculate_consumption(self):
+        self.consumption.set(self.value.get() - self.history_value.get())
+
+    def calculate_payment(self):
+        consumption = float(self.consumption.get())
+        price = float(self.price.get())
+        s_p = float(self.subscription_price.get())
+        self.payment.set(consumption * price + s_p)
+
 
 
 
